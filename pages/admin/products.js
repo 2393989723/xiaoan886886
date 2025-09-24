@@ -159,4 +159,85 @@ export default function AdminProducts() {
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button 
                 onClick={() => setIsAddModalOpen(false)}
-                style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4p
+                style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                取消
+              </button>
+              <button 
+                onClick={handleAddProduct}
+                style={{ padding: '8px 16px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                确认添加
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ 
+          width: '100%', 
+          borderCollapse: 'collapse', 
+          marginTop: '20px' 
+        }}>
+          <thead>
+            <tr style={{ background: '#f8f9fa' }}>
+              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>ID</</</</</</th>
+              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>商品名称</</</</</</th>
+              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>实际价格（元）</</</</</</th>
+              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>钻石价格</</</</</</th>
+              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>上架状态</</</</</</th>
+              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>操作</</</</</</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.length === 0 ? (
+              <tr>
+                <td colspan="6" style={{ padding: '20px', border: '1px solid #ddd', textAlign: 'center' }}>暂无商品</td>
+              </tr>
+            ) : (
+              products.map(product => (
+                <tr key={product.id}>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.id.slice(-6)}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.name}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.price}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.diamondCost}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
+                    <button 
+                      onClick={() => handleToggleActive(product.id, product.isActive)}
+                      style={{ 
+                        padding: '4px 8px', 
+                        background: product.isActive ? '#4CAF50' : '#f44336', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '4px', 
+                        cursor: 'pointer' 
+                      }}
+                    >
+                      {product.isActive ? '已上架' : '已下架'}
+                    </button>
+                  </td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
+                    <button 
+                      onClick={() => handleDelete(product.id)}
+                      style={{ 
+                        padding: '4px 8px', 
+                        background: '#f44336', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '4px', 
+                        cursor: 'pointer' 
+                      }}
+                    >
+                      删除
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+            }
