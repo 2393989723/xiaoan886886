@@ -1,64 +1,96 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { getAllUsers, addDiamondsToUser } from '../../lib/admin';
+import { getAllProducts, addProduct, editProduct, deleteProduct } from '../../lib/products';
 
-export default function AdminUsers() {
-  const [users, setUsers] = useState([]);
+export default function AdminProducts() {
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
-  const [rechargeModal, setRechargeModal] = useState({ open: false, userId: '', username: '', amount: '' });
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', diamondCost: '', accountInfo: '' });
   const router = useRouter();
 
-  // 加载用户列表
+  // 加载商品列表
   useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getAllUsers();
-      setUsers(data);
+    const fetchProducts = async () => {
+      const data = await getAllProducts();
+      setProducts(data);
       setLoading(false);
     };
-    fetchUsers();
+    fetchProducts();
   }, []);
 
-  // 打开充值弹窗
-  const openRechargeModal = (user) => {
-    setRechargeModal({
-      open: true,
-      userId: user.id,
-      username: user.username,
-      amount: ''
-    });
+  // 添加商品
+  const handleAddProduct = async () => {
     setMessage('');
-  };
-
-  // 提交充值
-  const handleRecharge = async () => {
-    setMessage('');
-    if (!rechargeModal.amount || isNaN(Number(rechargeModal.amount)) || Number(rechargeModal.amount) <= 0) {
-      setMessage('❌ 请输入有效的充值金额（正数）');
+    // 验证输入
+    if (!newProduct.name || !newProduct.price || !newProduct.diamondCost || !newProduct.accountInfo) {
+      setMessage('❌ 请填写所有字段');
+      return;
+    }
+    if (isNaN(Number(newProduct.price)) || Number(newProduct.price) <= 0) {
+      setMessage('❌ 实际价格必须是正数');
+      return;
+    }
+    if (isNaN(Number(newProduct.diamondCost)) || Number(newProduct.diamondCost) <= 0) {
+      setMessage('❌ 钻石价格必须是正数');
       return;
     }
 
-    const result = await addDiamondsToUser(rechargeModal.userId, Number(rechargeModal.amount));
-    if (result.error) {
-      setMessage(`❌ ${result.error}`);
-      return;
-    }
-
-    // 充值成功：更新用户列表+提示
-    setMessage(`✅ 给 ${rechargeModal.username} 充值 ${rechargeModal.amount} 钻石成功`);
-    setUsers(prev => prev.map(user => 
-      user.id === rechargeModal.userId ? { ...user, diamonds: user.diamonds + Number(rechargeModal.amount) } : user
-    ));
-    // 3秒后关闭弹窗
-    setTimeout(() => setRechargeModal({ ...rechargeModal, open: false }), 3000);
+    // 调用添加接口
+    await addProduct(
+      newProduct.name,
+      Number(newProduct.price),
+      Number(newProduct.diamondCost),
+      newProduct.accountInfo
+    );
+    setMessage('✅ 商品添加成功');
+    // 重置表单+刷新列表
+    setNewProduct({ name: '', price: '', diamondCost: '', accountInfo: '' });
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>加载用户中...</div>;
+  // 编辑商品（简化：仅修改是否上架状态）
+  const handleToggleActive = async (productId, currentStatus) => {
+    const result = await editProduct(productId, { isActive: !currentStatus });
+    if (result.success) {
+      setProducts(prev => prev.map(p => 
+        p.id === productId ? { ...p, isActive: !currentStatus } : p
+      ));
+    }
+  };
+
+  // 删除商品
+  const handleDelete = async (productId) => {
+    if (!confirm('确定要删除该商品吗？删除后不可恢复！')) return;
+    
+    const result = await deleteProduct(productId);
+    if (result.success) {
+      setProducts(prev => prev.filter(p => p.id !== productId));
+    }
+  };
+
+  if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>加载商品中...</div>;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h2>用户管理</h2>
+        <h2>商品管理</h2>
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          style={{ 
+            padding: '8px 16px', 
+            background: '#4CAF50', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '4px', 
+            cursor: 'pointer' 
+          }}
+        >
+          添加商品
+        </button>
         <button 
           onClick={() => router.push('/admin')}
           style={{ 
@@ -74,8 +106,8 @@ export default function AdminUsers() {
         </button>
       </header>
 
-      {/* 充值弹窗 */}
-      {rechargeModal.open && (
+      {/* 添加商品弹窗 */}
+      {isAddModalOpen && (
         <div style={{ 
           position: 'fixed', 
           top: 0, 
@@ -93,42 +125,69 @@ export default function AdminUsers() {
             padding: '25px', 
             borderRadius: '8px', 
             width: '90%', 
-            maxWidth: '400px' 
+            maxWidth: '500px' 
           }}>
-            <h3 style={{ marginTop: 0 }}>给用户充值钻石</h3>
-            <p style={{ marginBottom: '15px' }}>用户名：{rechargeModal.username}</p>
+            <h3 style={{ marginTop: 0 }}>添加新商品</h3>
             {message && <div style={{ padding: '10px', marginBottom: '15px', background: message.includes('✅') ? '#dff0d8' : '#f2dede' }}>{message}</div>}
             
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '5px' }}>充值钻石数量</label>
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>商品名称</label>
+              <input
+                type="text"
+                value={newProduct.name}
+                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>实际价格（元）</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>钻石价格</label>
               <input
                 type="number"
                 min="1"
-                value={rechargeModal.amount}
-                onChange={(e) => setRechargeModal({ ...rechargeModal, amount: e.target.value })}
+                value={newProduct.diamondCost}
+                onChange={(e) => setNewProduct({ ...newProduct, diamondCost: e.target.value })}
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>账号信息</label>
+              <textarea
+                value={newProduct.accountInfo}
+                onChange={(e) => setNewProduct({ ...newProduct, accountInfo: e.target.value })}
+                rows="3"
+                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              ></textarea>
             </div>
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button 
-                onClick={() => setRechargeModal({ ...rechargeModal, open: false })}
+                onClick={() => setIsAddModalOpen(false)}
                 style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
               >
                 取消
               </button>
               <button 
-                onClick={handleRecharge}
+                onClick={handleAddProduct}
                 style={{ padding: '8px 16px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
               >
-                确认充值
+                确认添加
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 用户列表表格 */}
+      {/* 商品列表表格 */}
       <div style={{ overflowX: 'auto' }}>
         <table style={{ 
           width: '100%', 
@@ -137,52 +196,54 @@ export default function AdminUsers() {
         }}>
           <thead>
             <tr style={{ background: '#f8f9fa' }}>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户ID</</th>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户名</</th>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>角色</</th>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>当前钻石</</th>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>注册时间</</th>
+              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>ID</</th>
+              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>商品名称</</th>
+              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>实际价格（元）</</th>
+              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>钻石价格</</th>
+              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>上架状态</</th>
               <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>操作</</th>
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
+            {products.length === 0 ? (
               <tr>
-                <td colspan="6" style={{ padding: '20px', border: '1px solid #ddd', textAlign: 'center' }}>暂无用户</td>
+                <td colspan="6" style={{ padding: '20px', border: '1px solid #ddd', textAlign: 'center' }}>暂无商品</td>
               </tr>
             ) : (
-              users.map(user => (
-                <tr key={user.id}>
-                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{user.id.slice(-6)}</td>
-                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{user.username}</td>
-                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
-                    <span style={{ 
-                      padding: '3px 8px', 
-                      background: user.role === 'admin' ? '#2196F3' : '#4CAF50', 
-                      color: 'white', 
-                      borderRadius: '4px',
-                      fontSize: '12px'
-                    }}>
-                      {user.role === 'admin' ? '管理员' : '普通用户'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{user.diamonds}</td>
-                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
-                    {new Date(user.createdAt).toLocaleString()}
-                  </td>
+              products.map(product => (
+                <tr key={product.id}>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.id.slice(-6)}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.name}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.price}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{product.diamondCost}</td>
                   <td style={{ padding: '12px', border: '1px solid #ddd' }}>
                     <button 
-                      onClick={() => openRechargeModal(user)}
+                      onClick={() => handleToggleActive(product.id, product.isActive)}
                       style={{ 
                         padding: '4px 8px', 
-                        background: '#2196F3', 
+                        background: product.isActive ? '#4CAF50' : '#f44336', 
                         color: 'white', 
                         border: 'none', 
                         borderRadius: '4px', 
                         cursor: 'pointer' 
                       }}
                     >
-                      充值钻石
+                      {product.isActive ? '已上架' : '已下架'}
+                    </button>
+                  </td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
+                    <button 
+                      onClick={() => handleDelete(product.id)}
+                      style={{ 
+                        padding: '4px 8px', 
+                        background: '#f44336', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '4px', 
+                        cursor: 'pointer' 
+                      }}
+                    >
+                      删除
                     </button>
                   </td>
                 </tr>
@@ -193,4 +254,4 @@ export default function AdminUsers() {
       </div>
     </div>
   );
-                                              }
+                                                 }
