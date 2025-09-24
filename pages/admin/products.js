@@ -182,12 +182,12 @@ export default function AdminProducts() {
         }}>
           <thead>
             <tr style={{ background: '#f8f9fa' }}>
-              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>ID</</</</</</th>
-              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>商品名称</</</</</</th>
-              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>实际价格（元）</</</</</</th>
-              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>钻石价格</</</</</</th>
-              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>上架状态</</</</</</th>
-              <<<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>操作</</</</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>ID</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>商品名称</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>实际价格（元）</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>钻石价格</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>上架状态</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>操作</</</th>
             </tr>
           </thead>
           <tbody>
@@ -240,4 +240,4 @@ export default function AdminProducts() {
       </div>
     </div>
   );
-            }
+                                                              }
