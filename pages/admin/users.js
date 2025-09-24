@@ -130,12 +130,12 @@ export default function AdminUsers() {
         }}>
           <thead>
             <tr style={{ background: '#f8f9fa' }}>
-              <<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户ID</</</</</th>
-              <<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户名</</</</</th>
-              <<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>角色</</</</</th>
-              <<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>当前钻石</</</</</th>
-              <<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>注册时间</</</</</th>
-              <<<<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>操作</</</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户ID</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户名</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>角色</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>当前钻石</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>注册时间</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>操作</</</th>
             </tr>
           </thead>
           <tbody>
@@ -186,4 +186,4 @@ export default function AdminUsers() {
       </div>
     </div>
   );
-      }
+}
