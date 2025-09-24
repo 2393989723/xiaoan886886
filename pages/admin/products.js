@@ -52,7 +52,7 @@ export default function AdminProducts() {
     }, 1000);
   };
 
-  // 编辑商品（简化：仅修改是否上架状态，可扩展其他字段）
+  // 编辑商品（简化：仅修改是否上架状态）
   const handleToggleActive = async (productId, currentStatus) => {
     const result = await editProduct(productId, { isActive: !currentStatus });
     if (result.success) {
@@ -254,4 +254,4 @@ export default function AdminProducts() {
       </div>
     </div>
   );
-}
+    }
