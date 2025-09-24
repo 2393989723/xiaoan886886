@@ -45,6 +45,46 @@ export default function AdminOrders() {
         }}>
           <thead>
             <tr style={{ background: '#f8f9fa' }}>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>订单ID</</th>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户名</</th>
-              <<th style={{ padding: '12px', border: '1px solid #ddd', textAl
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>订单ID</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>用户名</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>购买商品</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>消耗钻石</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>订单状态</</</th>
+              <<<th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>购买时间</</</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.length === 0 ? (
+              <tr>
+                <td colspan="6" style={{ padding: '20px', border: '1px solid #ddd', textAlign: 'center' }}>暂无订单</td>
+              </tr>
+            ) : (
+              orders.map(order => (
+                <tr key={order.id}>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{order.id.slice(-8)}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{order.username}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{order.productName}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>{order.diamondCost}</td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
+                    <span style={{ 
+                      padding: '3px 8px', 
+                      background: '#4CAF50', 
+                      color: 'white', 
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}>
+                      {order.status === 'completed' ? '已完成' : '已过期'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px', border: '1px solid #ddd' }}>
+                    {new Date(order.createdAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+    }
